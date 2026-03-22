@@ -1,5 +1,5 @@
 //
-//  AddItemView.swift
+//  StoreItemAddView.swift
 //  comestibles
 //
 //  Created by Daniel Kagemann on 22.03.26.
@@ -10,7 +10,7 @@ import CodeScanner
 import SwiftData
 import SwiftUI
 
-struct AddItemView: View {
+struct StoreItemAddView: View {
    /// environment
    @Environment(\.modelContext) private var modelContext
    @Environment(\.dismiss) private var dismiss
@@ -25,6 +25,7 @@ struct AddItemView: View {
    @State private var quantity = 1
    @State private var notes = ""
    @State private var image = ""
+   @State private var stores = ""
    @State private var selectedLocation: Location?
    @State private var showScanner: Bool = false
    @State private var showingAddLocation: Bool = false
@@ -47,7 +48,8 @@ struct AddItemView: View {
          Grocery.fromCode(code) { food in
             self.barcode = food!.code
             self.name = (food?.product.product_name ?? "Unbekannt")
-            self.image = food!.product.image_front_url ?? ""
+            self.image = food?.product.image_front_url ?? ""
+            self.stores = food?.product.stores ?? ""
             self.showScanner = false
          }
       case let .failure(error):
@@ -79,8 +81,8 @@ struct AddItemView: View {
                TextField("Barcode (optional)", text: $barcode)
                   .keyboardType(.numberPad)
                DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date)
-
-               TextField("Notes (optional)", text: $notes)
+               TextField("Notizen (optional)", text: $notes)
+               TextField("Geschäfte (optional)", text: $stores)
             }
 
             Section("Standort") {
@@ -132,7 +134,8 @@ struct AddItemView: View {
          barcode: barcode.isEmpty ? nil : barcode,
          dueDate: dueDate,
          quantity: quantity,
-         notes: notes.isEmpty ? nil : notes
+         notes: notes.isEmpty ? nil : notes,
+         stores: stores
       )
       modelContext.insert(item)
 

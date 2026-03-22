@@ -1,5 +1,5 @@
 //
-//  ItemListView.swift
+//  StoreListView.swift
 //  comestibles
 //
 //  Created by Daniel Kagemann on 22.03.26.
@@ -9,7 +9,7 @@
 import SwiftUI
 import SwiftData
 
-struct ItemListView: View {
+struct StoreListView: View {
    /// environment
     @Environment(\.modelContext) private var modelContext
 
@@ -29,7 +29,7 @@ struct ItemListView: View {
                 if hasItems {
                     List {
                       ForEach(storeItems) { item in
-                          GroceryRowView(item: item)
+                          StoreRowView(item: item)
                       }
                       .onDelete(perform: deleteStoreItems)
                     }
@@ -48,7 +48,7 @@ struct ItemListView: View {
                 }
             }
             .sheet(isPresented: $showAddSheet) {
-                AddItemView()
+               StoreItemAddView()
             }
         }
     }

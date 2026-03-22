@@ -27,7 +27,7 @@ struct comestiblesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ItemListView()
+           StoreListView()
         }
         .modelContainer(sharedModelContainer)
     }

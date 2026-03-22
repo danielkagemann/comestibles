@@ -14,6 +14,7 @@ struct GroceryItem: Decodable {
    
    struct Product: Decodable {
       var product_name: String?
+      var stores: String?
       var image_front_url: String?
    }
 }

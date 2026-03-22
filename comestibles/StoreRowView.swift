@@ -1,5 +1,5 @@
 //
-//  GroceryRowView.swift
+//  StoreRowView.swift
 //  comestibles
 //
 //  Created by Daniel Kagemann on 22.03.26.
@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct GroceryRowView: View {
+struct StoreRowView: View {
    /// input
     let item: StoreItem
 

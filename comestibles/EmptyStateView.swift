@@ -17,7 +17,7 @@ struct EmptyStateView: View {
                 systemImage: "cart.badge.questionmark"
             )
         } description: {
-            Text("Fügen Sie Lebensmittel mit einem Verfallsdatum hinzu, um die Frische zu gewährleisten.")
+            Text("Füge Lebensmittel mit einem Verfallsdatum hinzu.")
         } actions: {
             // no actions
         }
