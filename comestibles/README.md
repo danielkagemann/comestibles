@@ -25,4 +25,5 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 ### already implemented
 
 - bug: do not use duplicate location (unique name)
+- bug: add barcode manually
 

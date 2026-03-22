@@ -40,9 +40,18 @@ struct StoreItemAddView: View {
       !name.trimmingCharacters(in: .whitespaces).isEmpty && selectedLocation != nil
    }
 
-   /**
-    handle scanning process
-    */
+   func retrieveProductInformation(_ code: String) {
+      showScanner = .retrieve
+
+      Grocery.fromCode(code) { food in
+         self.barcode = food!.code
+         self.name = (food?.product.product_name ?? food?.product.product_name_en ?? "Unbekannt")
+         self.image = food?.product.image_front_url ?? ""
+         self.stores = food?.product.stores ?? ""
+         showScanner = .hidden
+      }
+   }
+
    func handleScan(result: Result<ScanResult, ScanError>) {
       switch result {
       case let .success(result):
@@ -50,16 +59,7 @@ struct StoreItemAddView: View {
          if code.isEmpty {
             return
          }
-
-         showScanner = .retrieve
-
-         Grocery.fromCode(code) { food in
-            self.barcode = food!.code
-            self.name = (food?.product.product_name ?? food?.product.product_name_en ?? "Unbekannt")
-            self.image = food?.product.image_front_url ?? ""
-            self.stores = food?.product.stores ?? ""
-            showScanner = .hidden
-         }
+         retrieveProductInformation(code)
       case let .failure(error):
          print("Scanning failed: \(error.localizedDescription)")
          showScanner = .hidden
@@ -100,8 +100,16 @@ struct StoreItemAddView: View {
 
                Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
 
-               TextField("Barcode (optional)", text: $barcode)
-                  .keyboardType(.numberPad)
+               HStack {
+                  TextField("Barcode (optional)", text: $barcode)
+                     .keyboardType(.numberPad)
+                  Button(action: {
+                     retrieveProductInformation(barcode)
+                  }, label: {
+                     Text("Prüfen").font(.caption)
+                  }).disabled(barcode.isEmpty)
+               }
+               
                DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date).datePickerStyle(.wheel)
                TextField("Notizen (optional)", text: $notes)
                TextField("Geschäfte (optional)", text: $stores)
