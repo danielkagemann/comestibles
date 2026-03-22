@@ -4,13 +4,18 @@ import SwiftData
 import SwiftUI
 
 struct LocationAddView: View {
+   /// /environments
    @Environment(\.modelContext) private var modelContext
    @Environment(\.dismiss) private var dismiss
 
+   /// queries
+   @Query(sort: \Location.name) private var locations: [Location]
+
+   //// input
    var onSave: (Location) -> Void = { _ in }
 
+   /// states
    @State private var name: String = ""
-
    @State private var street: String = ""
    @State private var postalCode: String = ""
    @State private var city: String = ""
@@ -25,11 +30,18 @@ struct LocationAddView: View {
    @State private var locationManager = SimpleLocationManager()
 
    private var isValid: Bool {
-      !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+      !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isExisting
    }
 
    private var isAddress: Bool {
       !street.isEmpty && (!postalCode.isEmpty || !city.isEmpty)
+   }
+
+   private var isExisting: Bool {
+      if locations.isEmpty { return false }
+      return locations.first {
+         $0.name.trimmingCharacters(in: .whitespacesAndNewlines) == name.trimmingCharacters(in: .whitespacesAndNewlines)
+      } != nil
    }
 
    var body: some View {
@@ -38,6 +50,12 @@ struct LocationAddView: View {
             Section("Standort") {
                TextField("Name des Standorts", text: $name)
                   .textInputAutocapitalization(.words)
+               
+               if isExisting {
+                  Text("Standort bereits vorhanden")
+                     .font(.caption2)
+                     .foregroundStyle(.red)
+               }
             }
             Section("Adresse") {
                TextField("Straße und Hausnummer", text: $street)
@@ -45,6 +63,16 @@ struct LocationAddView: View {
                   .keyboardType(.numbersAndPunctuation)
                TextField("Stadt", text: $city)
                   .textInputAutocapitalization(.words)
+               HStack {
+                  Button(action: geocodeAddress) {
+                     if isGeocoding { ProgressView() } else { Text("Adresse suchen") }
+                  }
+                  .disabled(!isAddress)
+                  Spacer()
+                  Button("Aktueller Standort") {
+                     requestCurrentLocation()
+                  }
+               }
             }
             Section("Karte") {
                Map(coordinateRegion: $region, interactionModes: [.zoom, .pan], annotationItems: selectedCoordinate.map { [MapPinItem(coordinate: $0)] } ?? []) { item in
@@ -56,39 +84,15 @@ struct LocationAddView: View {
                   RoundedRectangle(cornerRadius: 12).stroke(.quaternary)
                )
 
-               if let selectedCoordinate {
-                  HStack {
-                     Image(systemName: "mappin.circle")
-                     Text(String(format: "%.5f, %.5f", selectedCoordinate.latitude, selectedCoordinate.longitude))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                  }
-               } else {
-                  Text("Keine Koordinate ausgewählt")
-                     .font(.footnote)
-                     .foregroundStyle(.secondary)
-               }
-
                if let locationError {
                   Text(locationError)
                      .font(.footnote)
                      .foregroundStyle(.red)
                }
-
-               HStack {
-                  Button(action: geocodeAddress) {
-                     if isGeocoding { ProgressView() } else { Text("Adresse suchen") }
-                  }
-                  .disabled(isAddress)
-                  Spacer()
-                  Button("Aktueller Standort") {
-                     requestCurrentLocation()
-                  }
-               }
             }
          }
          .navigationTitle("Standort hinzufügen")
-         .navigationBarTitleDisplayMode(.inline)
+         .navigationBarTitleDisplayMode(.automatic)
          .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                Button("Abbrechen") { dismiss() }
@@ -161,50 +165,6 @@ struct LocationAddView: View {
 private struct MapPinItem: Identifiable {
    let id = UUID()
    let coordinate: CLLocationCoordinate2D
-}
-
-private final class SimpleLocationManager: NSObject, CLLocationManagerDelegate {
-   private let manager = CLLocationManager()
-   private var completion: ((Result<CLLocationCoordinate2D, Error>) -> Void)?
-
-   override init() {
-      super.init()
-      manager.delegate = self
-   }
-
-   func requestOnce(completion: @escaping (Result<CLLocationCoordinate2D, Error>) -> Void) {
-      self.completion = completion
-      switch manager.authorizationStatus {
-      case .notDetermined:
-         manager.requestWhenInUseAuthorization()
-      case .denied, .restricted:
-         completion(.failure(NSError(domain: "Location", code: 1, userInfo: [NSLocalizedDescriptionKey: "Ortungsdienste deaktiviert oder verweigert."])))
-      case .authorizedWhenInUse, .authorizedAlways:
-         manager.requestLocation()
-      @unknown default:
-         manager.requestWhenInUseAuthorization()
-      }
-   }
-
-   func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-      if manager.authorizationStatus == .authorizedWhenInUse || manager.authorizationStatus == .authorizedAlways {
-         manager.requestLocation()
-      }
-   }
-
-   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-      if let coordinate = locations.first?.coordinate {
-         completion?(.success(coordinate))
-      } else {
-         completion?(.failure(NSError(domain: "Location", code: 2, userInfo: [NSLocalizedDescriptionKey: "Keine Position erhalten."])))
-      }
-      completion = nil
-   }
-
-   func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-      completion?(.failure(error))
-      completion = nil
-   }
 }
 
 #Preview {

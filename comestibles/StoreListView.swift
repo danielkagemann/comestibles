@@ -37,7 +37,6 @@ struct StoreListView: View {
                     EmptyStateView()
                 }
             }
-            .navigationTitle("Lebensmittel")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {

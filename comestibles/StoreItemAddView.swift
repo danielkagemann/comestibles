@@ -10,6 +10,12 @@ import CodeScanner
 import SwiftData
 import SwiftUI
 
+enum ScannerType {
+   case hidden
+   case visible
+   case retrieve
+}
+
 struct StoreItemAddView: View {
    /// environment
    @Environment(\.modelContext) private var modelContext
@@ -27,7 +33,7 @@ struct StoreItemAddView: View {
    @State private var image = ""
    @State private var stores = ""
    @State private var selectedLocation: Location?
-   @State private var showScanner: Bool = false
+   @State private var showScanner: ScannerType = .hidden
    @State private var showingAddLocation: Bool = false
 
    private var isValid: Bool {
@@ -45,16 +51,18 @@ struct StoreItemAddView: View {
             return
          }
 
+         showScanner = .retrieve
+
          Grocery.fromCode(code) { food in
             self.barcode = food!.code
-            self.name = (food?.product.product_name ?? "Unbekannt")
+            self.name = (food?.product.product_name ?? food?.product.product_name_en ?? "Unbekannt")
             self.image = food?.product.image_front_url ?? ""
             self.stores = food?.product.stores ?? ""
-            self.showScanner = false
+            showScanner = .hidden
          }
       case let .failure(error):
          print("Scanning failed: \(error.localizedDescription)")
-         showScanner = false
+         showScanner = .hidden
       }
    }
 
@@ -63,13 +71,27 @@ struct StoreItemAddView: View {
          Form {
             Section("Barcode") {
                Button("Barcode scannen") {
-                  self.showScanner = true
+                  self.showScanner = .visible
                }
 
-               if showScanner{
-                  CodeScannerView(codeTypes: [.ean8, .ean13, .code39, .code93, .code128],
-                                  showViewfinder: true,
-                                  completion: handleScan)
+               if showScanner == .visible {
+                  VStack {
+                     CodeScannerView(codeTypes: [.ean8, .ean13, .code39, .code93, .code128],
+                                     showViewfinder: true,
+                                     completion: handleScan)
+
+                     HStack {
+                        Spacer()
+                        Button("Scannen abbrechen") {
+                           self.showScanner = .hidden
+                        }
+                     }
+                  }
+                  .frame(height: 280)
+               }
+
+               if showScanner == .retrieve {
+                  Text("Suche nach Produktinformationen...")
                }
             }
 
@@ -80,7 +102,7 @@ struct StoreItemAddView: View {
 
                TextField("Barcode (optional)", text: $barcode)
                   .keyboardType(.numberPad)
-               DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date)
+               DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date).datePickerStyle(.wheel)
                TextField("Notizen (optional)", text: $notes)
                TextField("Geschäfte (optional)", text: $stores)
             }
@@ -92,7 +114,7 @@ struct StoreItemAddView: View {
                      .font(.callout)
                } else {
                   Picker("Location", selection: $selectedLocation) {
-                     Text("Select…").tag(Optional<Location>(nil))
+                     Text("Auswählen...").tag(Optional<Location>(nil))
                      ForEach(locations) { location in
                         Text(location.name).tag(Optional(location))
                      }
@@ -110,16 +132,16 @@ struct StoreItemAddView: View {
                self.showingAddLocation = false
             }
          }
-      }
-      .navigationTitle("Hinzufügen")
-      .navigationBarTitleDisplayMode(.inline)
-      .toolbar {
-         ToolbarItem(placement: .cancellationAction) {
-            Button("Abbrechen") { dismiss() }
-         }
-         ToolbarItem(placement: .confirmationAction) {
-            Button("Speichern") { save() }
-               .disabled(!isValid)
+         .navigationTitle("Hinzufügen")
+         .navigationBarTitleDisplayMode(.automatic)
+         .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+               Button("Abbrechen") { dismiss() }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+               Button("Speichern") { save() }
+                  .disabled(!isValid)
+            }
          }
       }
    }
@@ -143,3 +165,6 @@ struct StoreItemAddView: View {
    }
 }
 
+#Preview {
+   StoreItemAddView()
+}
