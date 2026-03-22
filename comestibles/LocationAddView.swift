@@ -5,6 +5,8 @@ struct LocationAddView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    var onSave: (Location) -> Void = { _ in }
+
     @State private var name: String = ""
 
     private var isValid: Bool {
@@ -38,6 +40,7 @@ struct LocationAddView: View {
         guard !trimmed.isEmpty else { return }
         let location = Location(name: trimmed)
         modelContext.insert(location)
+        onSave(location)
         dismiss()
     }
 }

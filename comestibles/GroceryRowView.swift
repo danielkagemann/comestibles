@@ -9,7 +9,8 @@
 import SwiftUI
 
 struct GroceryRowView: View {
-    let item: GroceryItem
+   /// input
+    let item: StoreItem
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -24,7 +25,7 @@ struct GroceryRowView: View {
                 if let barcode = item.barcode {
                     Label(barcode, systemImage: "barcode")
                 }
-                Label("Qty: \(item.quantity)", systemImage: "number")
+                Label("Menge: \(item.quantity)", systemImage: "number")
             }
             .font(.caption)
             .foregroundStyle(.secondary)
@@ -34,12 +35,12 @@ struct GroceryRowView: View {
 }
 
 private struct ExpiryBadge: View {
-    let item: GroceryItem
+    let item: StoreItem
 
     var body: some View {
         let days = item.daysUntilExpiry
         let color: Color = item.isExpired ? .red : days <= 3 ? .orange : .green
-        let label = item.isExpired ? "Expired" : days == 0 ? "Today" : "in \(days)d"
+        let label = item.isExpired ? "Abgelaufen" : days == 0 ? "heute" : "in \(days)T"
 
         Text(label)
             .font(.caption2.bold())

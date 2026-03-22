@@ -1,22 +1,26 @@
+//
+//  ItemListView.swift
+//  comestibles
+//
+//  Created by Daniel Kagemann on 22.03.26.
+//
+
+
 import SwiftUI
 import SwiftData
 
 struct ItemListView: View {
+   /// environment
     @Environment(\.modelContext) private var modelContext
 
-    @Query(sort: \GroceryItem.name) private var groceryItems: [GroceryItem]
+   /// queries
     @Query(sort: \StoreItem.name) private var storeItems: [StoreItem]
 
+   /// states
     @State private var showAddSheet = false
-    @State private var selectedTab: ItemTab = .grocery
-
-    enum ItemTab: String, CaseIterable {
-        case grocery = "Food"
-        case store = "Items"
-    }
 
     private var hasItems: Bool {
-        selectedTab == .grocery ? !groceryItems.isEmpty : !storeItems.isEmpty
+       !storeItems.isEmpty
     }
 
     var body: some View {
@@ -24,23 +28,16 @@ struct ItemListView: View {
             Group {
                 if hasItems {
                     List {
-                        if selectedTab == .grocery {
-                            ForEach(groceryItems) { item in
-                                GroceryRowView(item: item)
-                            }
-                            .onDelete(perform: deleteGroceryItems)
-                        } else {
-                            ForEach(storeItems) { item in
-                                StoreRowView(item: item)
-                            }
-                            .onDelete(perform: deleteStoreItems)
-                        }
+                      ForEach(storeItems) { item in
+                          GroceryRowView(item: item)
+                      }
+                      .onDelete(perform: deleteStoreItems)
                     }
                 } else {
-                    EmptyStateView(tab: selectedTab)
+                    EmptyStateView()
                 }
             }
-            .navigationTitle("Inventory")
+            .navigationTitle("Lebensmittel")
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
@@ -49,29 +46,10 @@ struct ItemListView: View {
                         Image(systemName: "plus")
                     }
                 }
-                ToolbarItem(placement: .navigationBarLeading) {
-                    EditButton()
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                Picker("Type", selection: $selectedTab) {
-                    ForEach(ItemTab.allCases, id: \.self) { tab in
-                        Text(tab.rawValue).tag(tab)
-                    }
-                }
-                .pickerStyle(.segmented)
-                .padding()
-                .background(.ultraThinMaterial)
             }
             .sheet(isPresented: $showAddSheet) {
-                AddItemView(preselectedTab: selectedTab)
+                AddItemView()
             }
-        }
-    }
-
-    private func deleteGroceryItems(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(groceryItems[index])
         }
     }
 

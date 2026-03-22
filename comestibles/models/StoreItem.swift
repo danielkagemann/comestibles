@@ -9,12 +9,13 @@
 import Foundation
 import SwiftData
 
+
 @Model
-final class GroceryItem {
+final class StoreItem {
     var id: UUID
     var name: String
     var barcode: String?
-    var dueDate: Date
+    var dueDate: Date?
     var quantity: Int
     var notes: String?
     var createdAt: Date
@@ -25,7 +26,7 @@ final class GroceryItem {
         name: String,
         location: Location,  // ← required
         barcode: String? = nil,
-        dueDate: Date,
+        dueDate: Date? = nil,
         quantity: Int = 1,
         notes: String? = nil
     ) {
@@ -39,8 +40,15 @@ final class GroceryItem {
         self.location = location
     }
 
-    var isExpired: Bool { dueDate < Date.now }
-    var daysUntilExpiry: Int {
-        Calendar.current.dateComponents([.day], from: Date.now, to: dueDate).day ?? 0
-    }
+   var isExpired: Bool {
+      guard let dueDate else { return true }
+      return dueDate < Date.now
+   }
+   
+   var daysUntilExpiry: Int {
+      guard let dueDate else { return 0 }
+      return Calendar.current.dateComponents([.day], from: Date.now, to: dueDate).day ?? 0
+   }
+   
 }
+

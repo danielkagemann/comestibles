@@ -6,13 +6,41 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		9BBF4D9E2F7006B0008A7A0C /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 9BBF4D9D2F7006B0008A7A0C /* CodeScanner */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		9BBF4D6F2F6FDEDF008A7A0C /* comestibles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = comestibles.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9BBF4D9A2F700281008A7A0C /* Exceptions for "comestibles" folder in "comestibles" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				README.md,
+			);
+			target = 9BBF4D6E2F6FDEDF008A7A0C /* comestibles */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		9BBF4D9B2F700281008A7A0C /* Exceptions for "comestibles" folder in "Compile Sources" phase from "comestibles" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 9BBF4D6B2F6FDEDF008A7A0C /* Sources */;
+			membershipExceptions = (
+				README.md,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9BBF4D712F6FDEDF008A7A0C /* comestibles */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9BBF4D9A2F700281008A7A0C /* Exceptions for "comestibles" folder in "comestibles" target */,
+				9BBF4D9B2F700281008A7A0C /* Exceptions for "comestibles" folder in "Compile Sources" phase from "comestibles" target */,
+			);
 			path = comestibles;
 			sourceTree = "<group>";
 		};
@@ -23,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BBF4D9E2F7006B0008A7A0C /* CodeScanner in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +94,7 @@
 			);
 			name = comestibles;
 			packageProductDependencies = (
+				9BBF4D9D2F7006B0008A7A0C /* CodeScanner */,
 			);
 			productName = comestibles;
 			productReference = 9BBF4D6F2F6FDEDF008A7A0C /* comestibles.app */;
@@ -94,6 +124,9 @@
 			);
 			mainGroup = 9BBF4D662F6FDEDF008A7A0C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				9BBF4D9C2F7006B0008A7A0C /* XCRemoteSwiftPackageReference "CodeScanner" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9BBF4D702F6FDEDF008A7A0C /* Products */;
 			projectDirPath = "";
@@ -332,6 +365,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		9BBF4D9C2F7006B0008A7A0C /* XCRemoteSwiftPackageReference "CodeScanner" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/twostraws/CodeScanner";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		9BBF4D9D2F7006B0008A7A0C /* CodeScanner */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9BBF4D9C2F7006B0008A7A0C /* XCRemoteSwiftPackageReference "CodeScanner" */;
+			productName = CodeScanner;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 9BBF4D672F6FDEDF008A7A0C /* Project object */;
 }
