@@ -15,6 +15,7 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 
 ### ideas
 
+- new: add image after retrieval to add
 - bug: location select last one
 - bug: date in german localization
 - new: map with all locations and number of items

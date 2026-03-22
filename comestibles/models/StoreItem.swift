@@ -18,6 +18,7 @@ final class StoreItem {
    var notes: String?
    var createdAt: Date
    var stores: String?
+   var image: String?
 
    var location: Location // ← non-optional
 
@@ -28,7 +29,8 @@ final class StoreItem {
       dueDate: Date? = nil,
       quantity: Int = 1,
       notes: String? = nil,
-      stores: String? = nil
+      stores: String? = nil,
+      image: String? = nil
    ) {
       id = UUID()
       self.name = name
@@ -39,6 +41,7 @@ final class StoreItem {
       createdAt = Date.now
       self.location = location
       self.stores = stores
+      self.image = image
    }
 
    var isExpired: Bool {

@@ -68,6 +68,12 @@ struct StoreItemAddView: View {
          showScanner = .hidden
       }
    }
+   
+   func onLocationChanged(loc: Location?) {
+      if let name = loc?.name {
+         lastLocation = name
+      }
+   }
 
    var body: some View {
       NavigationStack {
@@ -104,14 +110,12 @@ struct StoreItemAddView: View {
                      .foregroundStyle(.secondary)
                      .font(.callout)
                } else {
-                  Picker("Location", selection: $selectedLocation) {
+                  Picker("Location", selection: $selectedLocation.onChange(onLocationChanged)) {
                      Text("Auswählen...").tag(Optional<Location>(nil))
                      ForEach(locations) { location in
                         Text(location.name).tag(Optional(location))
                      }
-                  }.onChange(of: $selectedLocation, {prev, value in
-                     lastLocation = selectedLocation.name
-                  })
+                  }
                }
                Button("Standort hinzufügen") {
                   showingAddLocation = true
@@ -157,6 +161,11 @@ struct StoreItemAddView: View {
             }
          }
       }
+      .onAppear {
+         if !lastLocation.isEmpty {
+            selectedLocation = locations.first { $0.name == lastLocation }
+         }
+      }
    }
 
    private func save() {
@@ -170,7 +179,8 @@ struct StoreItemAddView: View {
          dueDate: dueDate,
          quantity: quantity,
          notes: notes.isEmpty ? nil : notes,
-         stores: stores
+         stores: stores,
+         image: image
       )
       modelContext.insert(item)
 

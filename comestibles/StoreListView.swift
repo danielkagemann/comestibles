@@ -44,11 +44,14 @@ struct StoreListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
+                    .buttonStyle(.glassProminent)
                 }
             }
             .sheet(isPresented: $showAddSheet) {
                StoreItemAddView()
             }
+            .navigationTitle("Liste der Artikel")
+            .navigationBarTitleDisplayMode(.automatic)
         }
     }
 
@@ -57,4 +60,9 @@ struct StoreListView: View {
             modelContext.delete(storeItems[index])
         }
     }
+}
+
+
+#Preview {
+   StoreListView()
 }
