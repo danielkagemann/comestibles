@@ -17,6 +17,9 @@ enum ScannerType {
 }
 
 struct StoreItemAddView: View {
+   /// appstorage
+   @AppStorage("lastlocation") private var lastLocation: String = ""
+   
    /// environment
    @Environment(\.modelContext) private var modelContext
    @Environment(\.dismiss) private var dismiss
@@ -95,7 +98,27 @@ struct StoreItemAddView: View {
                }
             }
 
-            Section("Details") {
+            Section("Standort") {
+               if locations.isEmpty {
+                  Text("Kein Standort gefunden.")
+                     .foregroundStyle(.secondary)
+                     .font(.callout)
+               } else {
+                  Picker("Location", selection: $selectedLocation) {
+                     Text("Auswählen...").tag(Optional<Location>(nil))
+                     ForEach(locations) { location in
+                        Text(location.name).tag(Optional(location))
+                     }
+                  }.onChange(of: $selectedLocation, {prev, value in
+                     lastLocation = selectedLocation.name
+                  })
+               }
+               Button("Standort hinzufügen") {
+                  showingAddLocation = true
+               }
+            }
+
+            Section("Artikelinformationen") {
                TextField("Name", text: $name)
 
                Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
@@ -109,28 +132,10 @@ struct StoreItemAddView: View {
                      Text("Prüfen").font(.caption)
                   }).disabled(barcode.isEmpty)
                }
-               
+
                DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date).datePickerStyle(.wheel)
                TextField("Notizen (optional)", text: $notes)
                TextField("Geschäfte (optional)", text: $stores)
-            }
-
-            Section("Standort") {
-               if locations.isEmpty {
-                  Text("Kein Standort gefunden.")
-                     .foregroundStyle(.secondary)
-                     .font(.callout)
-               } else {
-                  Picker("Location", selection: $selectedLocation) {
-                     Text("Auswählen...").tag(Optional<Location>(nil))
-                     ForEach(locations) { location in
-                        Text(location.name).tag(Optional(location))
-                     }
-                  }
-               }
-               Button("Standort hinzufügen") {
-                  showingAddLocation = true
-               }
             }
          }
          .sheet(isPresented: $showingAddLocation) {
