@@ -28,6 +28,7 @@ struct LocationAddView: View {
    @State private var locationError: String?
 
    @State private var locationManager = SimpleLocationManager()
+   @State private var geocodeWorkItem: DispatchWorkItem?
 
    private var isValid: Bool {
       !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isExisting
@@ -59,15 +60,14 @@ struct LocationAddView: View {
             }
             Section("Adresse") {
                TextField("Straße und Hausnummer", text: $street)
+                  .onChange(of: street) { _ in scheduleSilentGeocode() }
                TextField("PLZ", text: $postalCode)
                   .keyboardType(.numbersAndPunctuation)
+                  .onChange(of: postalCode) { _ in scheduleSilentGeocode() }
                TextField("Stadt", text: $city)
                   .textInputAutocapitalization(.words)
+                  .onChange(of: city) { _ in scheduleSilentGeocode() }
                HStack {
-                  Button(action: geocodeAddress) {
-                     if isGeocoding { ProgressView() } else { Text("Adresse suchen") }
-                  }
-                  .disabled(!isAddress)
                   Spacer()
                   Button("Aktueller Standort") {
                      requestCurrentLocation()
@@ -89,6 +89,12 @@ struct LocationAddView: View {
                      .font(.footnote)
                      .foregroundStyle(.red)
                }
+            }
+            Section {
+               Button(action: geocodeAddress) {
+                  Text("Adresse suchen")
+               }
+               .disabled(!isAddress)
             }
          }
          .navigationTitle("Standort hinzufügen")
@@ -137,8 +143,41 @@ struct LocationAddView: View {
       }
    }
 
+   private func silentlyGeocodeCurrentAddress() {
+      let trimmedStreet = street.trimmingCharacters(in: .whitespacesAndNewlines)
+      let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
+      let trimmedPostal = postalCode.trimmingCharacters(in: .whitespacesAndNewlines)
+
+      var parts: [String] = []
+      if !trimmedStreet.isEmpty { parts.append(trimmedStreet) }
+      if !trimmedPostal.isEmpty { parts.append(trimmedPostal) }
+      if !trimmedCity.isEmpty { parts.append(trimmedCity) }
+
+      let query = parts.joined(separator: ", ")
+      guard !query.isEmpty else { return }
+
+      geocoder.geocodeAddressString(query) { placemarks, _ in
+         guard let coordinate = placemarks?.first?.location?.coordinate else { return }
+         selectedCoordinate = coordinate
+         withAnimation {
+            region.center = coordinate
+         }
+      }
+   }
+
+   private func scheduleSilentGeocode() {
+      guard isAddress else { return }
+      geocodeWorkItem?.cancel()
+      let workItem = DispatchWorkItem { [weak geocoder] in
+         silentlyGeocodeCurrentAddress()
+      }
+      geocodeWorkItem = workItem
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.6, execute: workItem)
+   }
+
    private func requestCurrentLocation() {
       locationError = nil
+      isGeocoding = true
       locationManager.requestOnce { result in
          switch result {
          case let .success(coordinate):
@@ -146,7 +185,39 @@ struct LocationAddView: View {
             withAnimation {
                region.center = coordinate
             }
+
+            // Reverse geocode to fill address fields
+            let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+            geocoder.reverseGeocodeLocation(location) { placemarks, error in
+               defer { isGeocoding = false }
+               if let error = error {
+                  locationError = "Reverse Geocoding fehlgeschlagen: \(error.localizedDescription)"
+                  return
+               }
+               guard let placemark = placemarks?.first else {
+                  locationError = "Keine Adressdaten für diese Position gefunden."
+                  return
+               }
+
+               // Compose street from thoroughfare and subThoroughfare if available
+               let streetName = placemark.thoroughfare ?? ""
+               let streetNumber = placemark.subThoroughfare ?? ""
+               let composedStreet: String
+               if streetName.isEmpty {
+                  composedStreet = streetNumber
+               } else if streetNumber.isEmpty {
+                  composedStreet = streetName
+               } else {
+                  composedStreet = "\(streetName) \(streetNumber)"
+               }
+
+               street = composedStreet
+               postalCode = placemark.postalCode ?? ""
+               city = placemark.locality ?? placemark.subLocality ?? placemark.administrativeArea ?? ""
+            }
+
          case let .failure(error):
+            isGeocoding = false
             locationError = error.localizedDescription
          }
       }

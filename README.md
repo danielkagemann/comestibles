@@ -15,14 +15,16 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 
 ### ideas
 
+- new website
+- new splash
 - new: navigation
 - new: map with all locations and number of items
 - new: list of due date near 5 days
 - new: location management
-- new: adding location improvements regarding getting address / coordinates
 
 ### already implemented
 
+- new: adding location improvements regarding getting address / coordinates
 - new: filter possibility
 - bug: date in german localization
 - bug: location select last one
