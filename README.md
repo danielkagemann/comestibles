@@ -15,8 +15,7 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 
 ### ideas
 
-- new: add image after retrieval to add
-- bug: location select last one
+- new: navigation
 - bug: date in german localization
 - new: map with all locations and number of items
 - new: list of due date near 5 days
@@ -25,6 +24,8 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 
 ### already implemented
 
+- bug: location select last one
+- new: add image after retrieval to add
 - bug: do not use duplicate location (unique name)
 - bug: add barcode manually
 

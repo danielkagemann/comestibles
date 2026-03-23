@@ -9,7 +9,9 @@
 import SwiftUI
 
 struct EmptyStateView: View {
-    
+   /// input
+   var action: () -> Void
+   
     var body: some View {
         ContentUnavailableView {
             Label(
@@ -19,7 +21,14 @@ struct EmptyStateView: View {
         } description: {
             Text("Füge Lebensmittel mit einem Verfallsdatum hinzu.")
         } actions: {
-            // no actions
+           Button ("Hinzufügen") {
+              action()
+           }
+           .buttonStyle(.glassProminent)
         }
     }
+}
+
+#Preview {
+   EmptyStateView() {}
 }

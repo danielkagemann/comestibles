@@ -110,12 +110,12 @@ struct StoreItemAddView: View {
                      .foregroundStyle(.secondary)
                      .font(.callout)
                } else {
-                  Picker("Location", selection: $selectedLocation.onChange(onLocationChanged)) {
+                  Picker("", selection: $selectedLocation.onChange(onLocationChanged)) {
                      Text("Auswählen...").tag(Optional<Location>(nil))
                      ForEach(locations) { location in
                         Text(location.name).tag(Optional(location))
                      }
-                  }
+                  }.labelsHidden()
                }
                Button("Standort hinzufügen") {
                   showingAddLocation = true

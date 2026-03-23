@@ -8,40 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		9BBF4D9E2F7006B0008A7A0C /* CodeScanner in Frameworks */ = {isa = PBXBuildFile; productRef = 9BBF4D9D2F7006B0008A7A0C /* CodeScanner */; };
+		9BBF4DF52F70477B008A7A0C /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 9BBF4DDF2F70477B008A7A0C /* README.md */; };
 		9BBF4DF82F704E07008A7A0C /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9BBF4DF72F704E07008A7A0C /* Kingfisher */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		9BBF4D6F2F6FDEDF008A7A0C /* comestibles.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = comestibles.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9BBF4DDF2F70477B008A7A0C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		9BBF4D9A2F700281008A7A0C /* Exceptions for "comestibles" folder in "comestibles" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				README.md,
-			);
-			target = 9BBF4D6E2F6FDEDF008A7A0C /* comestibles */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		9BBF4D9B2F700281008A7A0C /* Exceptions for "comestibles" folder in "Compile Sources" phase from "comestibles" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = 9BBF4D6B2F6FDEDF008A7A0C /* Sources */;
-			membershipExceptions = (
-				README.md,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9BBF4D712F6FDEDF008A7A0C /* comestibles */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				9BBF4D9A2F700281008A7A0C /* Exceptions for "comestibles" folder in "comestibles" target */,
-				9BBF4D9B2F700281008A7A0C /* Exceptions for "comestibles" folder in "Compile Sources" phase from "comestibles" target */,
-			);
 			path = comestibles;
 			sourceTree = "<group>";
 		};
@@ -65,6 +43,7 @@
 			children = (
 				9BBF4D712F6FDEDF008A7A0C /* comestibles */,
 				9BBF4D702F6FDEDF008A7A0C /* Products */,
+				9BBF4DDF2F70477B008A7A0C /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -156,6 +135,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9BBF4DF52F70477B008A7A0C /* README.md in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

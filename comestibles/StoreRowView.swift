@@ -15,15 +15,20 @@ struct StoreRowView: View {
    var body: some View {
       VStack {
          HStack {
-            
             KFImage(URL(string: item.image ?? ""))
                .placeholder {
-                  ProgressView()
+                  RoundedRectangle(cornerRadius: 12)
+                     .fill(Color(.systemGray6))
+                     .overlay {
+                        Text("?")
+                           .padding()
+                     }
                }
                .resizable()
                .scaledToFill()
-               .frame(width: 64, height: 64)
+               .frame(width: 58, height: 58)
                .clipped()
+               .clipShape(RoundedRectangle(cornerRadius: 12))
 
             
             VStack (alignment: .leading, spacing: 4){
@@ -33,7 +38,7 @@ struct StoreRowView: View {
                   Spacer()
                   ExpiryBadge(item: item)
                }
-               HStack(spacing: 8) {
+               Group {
                   Label(item.location.name, systemImage: "mappin.and.ellipse.circle")
                   Label("\(item.quantity)", systemImage: "numbers.rectangle")
                }
@@ -52,7 +57,7 @@ private struct ExpiryBadge: View {
    var body: some View {
       let days = item.daysUntilExpiry
       let color: Color = item.isExpired ? .red : days <= 3 ? .orange : .green
-      let label = item.isExpired ? "Abgelaufen" : days == 0 ? "heute" : "in \(days)T"
+      let label = item.isExpired ? "Abgelaufen" : days == 0 ? "heute" : days.smartDays()
 
       Text(label)
          .font(.caption2.bold())
