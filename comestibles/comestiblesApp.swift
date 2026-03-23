@@ -30,5 +30,6 @@ struct comestiblesApp: App {
            StoreListView()
         }
         .modelContainer(sharedModelContainer)
+        .environment(\.locale, .init(identifier: "de"))
     }
 }

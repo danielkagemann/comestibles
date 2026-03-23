@@ -48,8 +48,11 @@ struct StoreListView: View {
                         StoreRowView(item: item)
                      }
                      .onDelete(perform: deleteStoreItems)
-                     .scrollIndicators(.hidden)
                   }
+                  .listStyle(.plain)
+                  .scrollContentBackground(.hidden)
+                  .scrollIndicators(.hidden)
+                  .background(Color(.systemBackground))
                }
             } else {
                EmptyStateView {

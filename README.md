@@ -16,7 +16,6 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 ### ideas
 
 - new: navigation
-- bug: date in german localization
 - new: map with all locations and number of items
 - new: list of due date near 5 days
 - new: location management
@@ -24,6 +23,8 @@ https://world.openfoodfacts.org/api/v1/product/8480000223111.json
 
 ### already implemented
 
+- new: filter possibility
+- bug: date in german localization
 - bug: location select last one
 - new: add image after retrieval to add
 - bug: do not use duplicate location (unique name)
