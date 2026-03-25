@@ -58,7 +58,7 @@ private struct ExpiryBadge: View {
       let days = item.daysUntilExpiry
       let color: Color = item.isExpired ? .red : days <= 3 ? .orange : .green
       let label = item.isExpired ? "Abgelaufen" : days == 0 ? "heute" : days.smartDays()
-
+      
       Text(label)
          .font(.caption2.bold())
          .padding(.horizontal, 8)
@@ -76,3 +76,4 @@ private struct ExpiryBadge: View {
    item.image = "https://images.openfoodfacts.org/images/products/848/000/022/3111/front_es.90.400.jpg"
    return StoreRowView(item: item)
 }
+
