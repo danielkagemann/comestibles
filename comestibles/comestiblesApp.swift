@@ -27,7 +27,7 @@ struct comestiblesApp: App {
 
     var body: some Scene {
         WindowGroup {
-           StoreListView()
+           ContentView()
         }
         .modelContainer(sharedModelContainer)
         .environment(\.locale, .init(identifier: "de"))

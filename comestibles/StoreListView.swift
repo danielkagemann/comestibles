@@ -7,15 +7,13 @@ struct StoreListView: View {
 
    /// Standort-Auswahl
    @Query(sort: \Location.name) private var locations: [Location]
-   @State private var selectedLocation: Location? = nil
-
-   /// Alle Items (werden in-memory gefiltert)
    @Query(sort: \StoreItem.name) private var storeItems: [StoreItem]
 
    /// states
    @State private var showAddSheet = false
+   @State private var selectedLocation: Location? = nil
 
-   /// In-Memory-Filter entsprechend der Standortauswahl
+   // derived state for in memory filtering
    private var filteredItems: [StoreItem] {
       guard let selectedLocation else { return storeItems }
       return storeItems.filter { $0.location.id == selectedLocation.id }
@@ -28,7 +26,7 @@ struct StoreListView: View {
    var body: some View {
       NavigationStack {
          Group {
-            if hasItems || !locations.isEmpty {
+            if hasItems {
                VStack(spacing: 0) {
                   if !locations.isEmpty {
                      Picker("Standort", selection: $selectedLocation) {
@@ -65,7 +63,7 @@ struct StoreListView: View {
                Button {
                   showAddSheet = true
                } label: {
-                  Image(systemName: "plus")
+                  Text("Neu").font(.callout)
                }
                .buttonStyle(.glassProminent)
             }
@@ -74,7 +72,7 @@ struct StoreListView: View {
             StoreItemAddView()
          }
          .navigationTitle(titleText)
-         .navigationBarTitleDisplayMode(.automatic)
+         .navigationBarTitleDisplayMode(.inline)
          .navigationBarHidden(!hasItems)
       }
    }
