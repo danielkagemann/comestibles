@@ -5,18 +5,18 @@ struct StoreListView: View {
    /// environment
    @Environment(\.modelContext) private var modelContext
 
-   /// Standort-Auswahl
-   @Query(sort: \Location.name) private var locations: [Location]
+   /// required location
+   var location: Location 
+
+   /// queries
    @Query(sort: \StoreItem.name) private var storeItems: [StoreItem]
 
    /// states
    @State private var showAddSheet = false
-   @State private var selectedLocation: Location? = nil
 
    // derived state for in memory filtering
    private var filteredItems: [StoreItem] {
-      guard let selectedLocation else { return storeItems }
-      return storeItems.filter { $0.location.id == selectedLocation.id }
+      storeItems.filter { $0.location.id == location.id }
    }
 
    private var hasItems: Bool {
@@ -24,61 +24,37 @@ struct StoreListView: View {
    }
 
    var body: some View {
-      NavigationStack {
-         Group {
-            if hasItems {
-               VStack(spacing: 0) {
-                  if !locations.isEmpty {
-                     Picker("Standort", selection: $selectedLocation) {
-                        Text("Alle").tag(Optional<Location>(nil))
-                        ForEach(locations) { location in
-                           Text(location.name).tag(Optional(location))
-                        }
-                     }
-                     .pickerStyle(.segmented)
-                     .padding(.horizontal)
-                     .padding(.top, 8)
-                     .padding(.bottom, 4)
-                  }
-
-                  List {
-                     ForEach(filteredItems) { item in
-                        StoreRowView(item: item)
-                     }
-                     .onDelete(perform: deleteStoreItems)
-                  }
-                  .listStyle(.plain)
-                  .scrollContentBackground(.hidden)
-                  .scrollIndicators(.hidden)
-                  .background(Color(.systemBackground))
+      Group {
+         if hasItems {
+            List {
+               ForEach(filteredItems) { item in
+                  StoreRowView(item: item)
                }
-            } else {
-               EmptyStateView {
-                  showAddSheet = true
-               }
+               .onDelete(perform: deleteStoreItems)
             }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .scrollIndicators(.hidden)
+            .background(Color(.systemBackground))
+         } else {
+            // TODO EmptyStateView
          }
-         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-               Button {
-                  showAddSheet = true
-               } label: {
-                  Text("Neu").font(.callout)
-               }
-               .buttonStyle(.glassProminent)
-            }
-         }
-         .sheet(isPresented: $showAddSheet) {
-            StoreItemAddView()
-         }
-         .navigationTitle(titleText)
-         .navigationBarTitleDisplayMode(.inline)
-         .navigationBarHidden(!hasItems)
       }
-   }
-
-   private var titleText: String {
-      return "Artikel (\(filteredItems.count))"
+      .navigationTitle("\(location.name) (\(filteredItems.count))")
+      .navigationBarTitleDisplayMode(.inline)
+      .toolbar {
+         ToolbarItem(placement: .navigationBarTrailing) {
+            Button {
+               showAddSheet = true
+            } label: {
+               Text("Neu").font(.callout)
+            }
+            .buttonStyle(.glassProminent)
+         }
+      }
+      .sheet(isPresented: $showAddSheet) {
+         StoreItemAddView()
+      }
    }
 
    private func deleteStoreItems(at offsets: IndexSet) {
@@ -86,8 +62,4 @@ struct StoreListView: View {
          modelContext.delete(filteredItems[index])
       }
    }
-}
-
-#Preview {
-   StoreListView()
 }

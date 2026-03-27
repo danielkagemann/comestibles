@@ -37,7 +37,6 @@ struct StoreItemAddView: View {
    @State private var stores = ""
    @State private var selectedLocation: Location?
    @State private var showScanner: ScannerType = .hidden
-   @State private var showingAddLocation: Bool = false
 
    private var isValid: Bool {
       !name.trimmingCharacters(in: .whitespaces).isEmpty && selectedLocation != nil
@@ -117,9 +116,7 @@ struct StoreItemAddView: View {
                      }
                   }.labelsHidden()
                }
-               Button("Standort hinzufügen") {
-                  showingAddLocation = true
-               }
+
             }
 
             Section("Artikelinformationen") {
@@ -140,13 +137,6 @@ struct StoreItemAddView: View {
                DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date).datePickerStyle(.wheel)
                TextField("Notizen (optional)", text: $notes)
                TextField("Geschäfte (optional)", text: $stores)
-            }
-         }
-         .sheet(isPresented: $showingAddLocation) {
-            LocationAddView { newLocation in
-               // Select the newly created location and close the sheet
-               self.selectedLocation = newLocation
-               self.showingAddLocation = false
             }
          }
          .navigationTitle("Hinzufügen")
