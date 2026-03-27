@@ -1,6 +1,27 @@
 import SwiftData
 import SwiftUI
 
+private enum GroupingMode: String, CaseIterable {
+   case store = "Geschäft"
+   case expiry = "Ablaufdatum"
+}
+
+private enum ExpiryBucket: String, CaseIterable {
+   case week = "≤ 7 Tage"
+   case month = "≤ 1 Monat"
+   case quarter = "≤ 3 Monate"
+   case other = "> 3 Monate"
+
+   static func bucket(for item: StoreItem) -> ExpiryBucket {
+      guard let _ = item.dueDate, !item.isExpired else { return .other }
+      let days = item.daysUntilExpiry
+      if days <= 7 { return .week }
+      if days <= 30 { return .month }
+      if days <= 90 { return .quarter }
+      return .other
+   }
+}
+
 struct StoreListView: View {
    /// environment
    @Environment(\.modelContext) private var modelContext
@@ -14,6 +35,7 @@ struct StoreListView: View {
    /// states
    @State private var showAddSheet = false
    @State private var searchText = ""
+   @State private var groupingMode: GroupingMode = .store
 
    // derived state for in memory filtering
    private var filteredItems: [StoreItem] {
@@ -27,7 +49,7 @@ struct StoreListView: View {
    }
 
    // items grouped by store name, unsorted items go to "Sonstiges"
-   private var groupedItems: [(store: String, items: [StoreItem])] {
+   private var groupedByStore: [(key: String, items: [StoreItem])] {
       var dict: [String: [StoreItem]] = [:]
       for item in filteredItems {
          let store = item.stores?.trimmingCharacters(in: .whitespaces).isEmpty == false
@@ -36,14 +58,34 @@ struct StoreListView: View {
          dict[store, default: []].append(item)
       }
       return dict
-         .map { (store: $0.key, items: $0.value) }
+         .map { (key: $0.key, items: $0.value) }
          .sorted { lhs, rhs in
-            if lhs.store == "Sonstiges" { return false }
-            if rhs.store == "Sonstiges" { return true }
-            return lhs.store < rhs.store
+            if lhs.key == "Sonstiges" { return false }
+            if rhs.key == "Sonstiges" { return true }
+            return lhs.key < rhs.key
          }
    }
-   
+
+   // items grouped by expiry bucket in fixed order
+   private var groupedByExpiry: [(key: String, items: [StoreItem])] {
+      var dict: [ExpiryBucket: [StoreItem]] = [:]
+      for item in filteredItems {
+         let bucket = ExpiryBucket.bucket(for: item)
+         dict[bucket, default: []].append(item)
+      }
+      return ExpiryBucket.allCases.compactMap { bucket in
+         guard let items = dict[bucket] else { return nil }
+         return (key: bucket.rawValue, items: items)
+      }
+   }
+
+   private var groupedItems: [(key: String, items: [StoreItem])] {
+      switch groupingMode {
+      case .store: return groupedByStore
+      case .expiry: return groupedByExpiry
+      }
+   }
+
    @ViewBuilder fileprivate func Empty() -> some View {
       ContentUnavailableView {
          Image(systemName: "cart.badge.questionmark")
@@ -85,7 +127,17 @@ struct StoreListView: View {
 
    @ViewBuilder private var contentView: some View {
       if hasItems {
-         itemList
+         VStack(spacing: 0) {
+            Picker("Gruppierung", selection: $groupingMode) {
+               ForEach(GroupingMode.allCases, id: \.self) { mode in
+                  Text(mode.rawValue).tag(mode)
+               }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+            itemList
+         }
       } else {
          Empty()
       }
@@ -93,8 +145,8 @@ struct StoreListView: View {
 
    private var itemList: some View {
       List {
-         ForEach(groupedItems, id: \.store) { group in
-            Section(group.store) {
+         ForEach(groupedItems, id: \.key) { group in
+            Section(group.key) {
                ForEach(group.items) { item in
                   StoreRowView(item: item)
                      .listRowSeparator(.hidden)

@@ -12,6 +12,8 @@ struct StoreRowView: View {
     /// input
     let item: StoreItem
 
+    @State private var showQuantitySheet = false
+
     var body: some View {
         HStack(alignment: .center, spacing: 12) {
             KFImage(URL(string: item.image ?? ""))
@@ -49,6 +51,46 @@ struct StoreRowView: View {
             ExpiryBadge(item: item)
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .onTapGesture { showQuantitySheet = true }
+        .sheet(isPresented: $showQuantitySheet) {
+            QuantitySheet(item: item)
+                .presentationDetents([.height(140)])
+                .presentationDragIndicator(.visible)
+        }
+    }
+}
+
+private struct QuantitySheet: View {
+    let item: StoreItem
+
+    var body: some View {
+       Text ("Menge ändern").font(.title2).bold()
+        HStack(spacing: 32) {
+            Button {
+                if item.quantity > 0 { item.quantity -= 1 }
+            } label: {
+                Image(systemName: "minus.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundStyle(item.quantity > 0 ? .primary : .tertiary)
+            }
+            .disabled(item.quantity <= 1)
+
+            Text("\(item.quantity)")
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .monospacedDigit()
+                .frame(minWidth: 60, alignment: .center)
+
+            Button {
+                item.quantity += 1
+            } label: {
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 24))
+                    .foregroundStyle(.primary)
+            }
+        }
+        .padding(.top, 24)
+        .frame(maxWidth: .infinity)
     }
 }
 
