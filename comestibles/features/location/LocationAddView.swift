@@ -12,7 +12,8 @@ struct LocationAddView: View {
    /// queries
    @Query(sort: \Location.name) private var locations: [Location]
 
-   //// input
+   //// input – wenn gesetzt, wird bearbeitet statt neu erstellt
+   var editLocation: Location? = nil
    var onSave: (Location) -> Void = { _ in }
 
    /// states
@@ -28,6 +29,8 @@ struct LocationAddView: View {
    @State private var locationManager = SimpleLocationManager()
    @State private var geocodeWorkItem: DispatchWorkItem?
 
+   private var isEditMode: Bool { editLocation != nil }
+
    private var isValid: Bool {
       !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isExisting
    }
@@ -35,6 +38,8 @@ struct LocationAddView: View {
    private var isExisting: Bool {
       if locations.isEmpty { return false }
       return locations.first {
+         // beim Bearbeiten denselben Eintrag ignorieren
+         $0.id != editLocation?.id &&
          $0.name.trimmingCharacters(in: .whitespacesAndNewlines) == name.trimmingCharacters(in: .whitespacesAndNewlines)
       } != nil
    }
@@ -96,8 +101,15 @@ struct LocationAddView: View {
                }
             }
          }
-         .navigationTitle("Standort")
+         .navigationTitle(isEditMode ? "Standort bearbeiten" : "Standort")
          .navigationBarTitleDisplayMode(.inline)
+         .onAppear {
+            if let loc = editLocation {
+               name = loc.name
+               address = loc.address ?? ""
+               selectedImageData = loc.image
+            }
+         }
          .onChange(of: pickerItem) { _, item in
             Task {
                selectedImageData = try? await item?.loadTransferable(type: Data.self)
@@ -157,10 +169,17 @@ struct LocationAddView: View {
    private func save() {
       let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
       guard !trimmed.isEmpty else { return }
-      let location = Location(name: trimmed, address: address.isEmpty ? nil : address, image: selectedImageData)
-      modelContext.insert(location)
-      onSave(location)
-      dismiss()
+      if let loc = editLocation {
+         loc.name = trimmed
+         loc.address = address.isEmpty ? nil : address
+         loc.image = selectedImageData
+         dismiss()
+      } else {
+         let location = Location(name: trimmed, address: address.isEmpty ? nil : address, image: selectedImageData)
+         modelContext.insert(location)
+         onSave(location)
+         dismiss()
+      }
    }
 }
 

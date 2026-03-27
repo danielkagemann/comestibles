@@ -16,6 +16,7 @@ struct LocationListView: View {
    @State private var showLocation: Bool = false
    @State private var selectedLocation: Location? = nil
    @State private var locationToDelete: Location? = nil
+   @State private var locationToEdit: Location? = nil
 
    /// queries
    @Query private var locations: [Location]
@@ -49,8 +50,22 @@ struct LocationListView: View {
                   .onTapGesture { selectedLocation = loc }
                   .listRowBackground(Color.clear)
                   .listRowSeparator(.hidden)
+                  .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                     Button {
+                        locationToEdit = loc
+                     } label: {
+                        Label("Bearbeiten", systemImage: "pencil")
+                     }
+                     .tint(.accentColor)
+                  }
+                  .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                     Button(role: .destructive) {
+                        locationToDelete = loc
+                     } label: {
+                        Label("Löschen", systemImage: "trash")
+                     }
+                  }
             }
-            .onDelete(perform: deleteStoreItems)
          }
          .listStyle(.plain)
          .scrollContentBackground(.hidden)
@@ -82,6 +97,9 @@ struct LocationListView: View {
       .sheet(isPresented: $showLocation) {
          LocationAddView()
       }
+      .sheet(item: $locationToEdit) { loc in
+         LocationAddView(editLocation: loc)
+      }
       .confirmationDialog(
          "Standort löschen?",
          isPresented: Binding(get: { locationToDelete != nil }, set: { if !$0 { locationToDelete = nil } }),
@@ -94,11 +112,6 @@ struct LocationListView: View {
             Text("\"\(name)\" und alle zugehörigen Artikel werden unwiderruflich geloescht.")
          }
       }
-   }
-
-   private func deleteStoreItems(at offsets: IndexSet) {
-      guard let index = offsets.first else { return }
-      locationToDelete = locations[index]
    }
 
    private func confirmDelete() {
