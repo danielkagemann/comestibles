@@ -15,9 +15,11 @@ struct LocationListView: View {
    /// states
    @State private var showLocation: Bool = false
    @State private var selectedLocation: Location? = nil
+   @State private var locationToDelete: Location? = nil
 
    /// queries
    @Query private var locations: [Location]
+   @Query private var storeItems: [StoreItem]
 
    @ViewBuilder fileprivate func Empty() -> some View {
       if locations.isEmpty {
@@ -41,16 +43,14 @@ struct LocationListView: View {
    @ViewBuilder fileprivate func Content() -> some View {
       if !locations.isEmpty {
          List {
-            ForEach(locations) { item in
-               LocationRowItem(item: item, count: locations.count(where: {$0.id == item.id}))
+            ForEach(locations) { loc in
+               LocationRowItem(item: loc, count: storeItems.count(where: {$0.location.id == loc.id}))
                   .contentShape(Rectangle())
-                  .onTapGesture { selectedLocation = item }
+                  .onTapGesture { selectedLocation = loc }
                   .listRowBackground(Color.clear)
+                  .listRowSeparator(.hidden)
             }
-            .listRowSeparator(.hidden)
-            
-            // TODO delete with confirmation because all items will be deleted too
-            // .onDelete(perform: deleteStoreItems)
+            .onDelete(perform: deleteStoreItems)
          }
          .listStyle(.plain)
          .scrollContentBackground(.hidden)
@@ -60,7 +60,7 @@ struct LocationListView: View {
    }
 
    var body: some View {
-      NavigationStack {
+      Group {
          Empty()
          Content()
             .navigationDestination(item: $selectedLocation) { location in
@@ -77,18 +77,34 @@ struct LocationListView: View {
             .buttonStyle(.glassProminent)
          }
       }
+      .navigationBarTitleDisplayMode(.inline)
+      .navigationBarHidden(locations.isEmpty)
       .sheet(isPresented: $showLocation) {
          LocationAddView()
       }
-      .navigationTitle("Standorte")
-      .navigationBarTitleDisplayMode(.inline)
-      .navigationBarHidden(!locations.isEmpty)
+      .confirmationDialog(
+         "Standort löschen?",
+         isPresented: Binding(get: { locationToDelete != nil }, set: { if !$0 { locationToDelete = nil } }),
+         titleVisibility: .visible
+      ) {
+         Button("Löschen", role: .destructive) { confirmDelete() }
+         Button("Abbrechen", role: .cancel) { locationToDelete = nil }
+      } message: {
+         if let name = locationToDelete?.name {
+            Text("\"\(name)\" und alle zugehörigen Artikel werden unwiderruflich geloescht.")
+         }
+      }
    }
 
    private func deleteStoreItems(at offsets: IndexSet) {
-      for index in offsets {
-         modelContext.delete(locations[index])
-      }
+      guard let index = offsets.first else { return }
+      locationToDelete = locations[index]
+   }
+
+   private func confirmDelete() {
+      guard let location = locationToDelete else { return }
+      modelContext.delete(location)
+      locationToDelete = nil
    }
 }
 

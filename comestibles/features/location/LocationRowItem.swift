@@ -19,7 +19,11 @@ struct LocationRowItem: View {
                .font(.headline)
             Spacer()
 
-            Text("\(count) Artikel").font(.caption)
+            if count == 0 {
+               Text("Keine Artikel").font(.caption)
+            } else {
+               Text("\(count) Artikel").font(.caption)
+            }
          }
 
          Group {
