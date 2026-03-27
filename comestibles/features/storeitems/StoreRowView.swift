@@ -47,13 +47,14 @@ struct StoreRowView: View {
             }
          }
       }
-      .padding(.vertical, 4)
+      .padding(.vertical, 2)
    }
 }
 
 private struct ExpiryBadge: View {
+   /// input
    let item: StoreItem
-
+   
    var body: some View {
       let days = item.daysUntilExpiry
       let color: Color = item.isExpired ? .red : days <= 3 ? .orange : .green
