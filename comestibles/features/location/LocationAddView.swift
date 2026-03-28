@@ -5,7 +5,7 @@ import SwiftData
 import SwiftUI
 
 struct LocationAddView: View {
-   /// /environments
+   /// environments
    @Environment(\.modelContext) private var modelContext
    @Environment(\.dismiss) private var dismiss
 

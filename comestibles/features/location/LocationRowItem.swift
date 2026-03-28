@@ -8,41 +8,43 @@
 import SwiftUI
 
 struct LocationRowItem: View {
-   /// input
-   var item: Location
-   var count: Int
+    /// input
+    var item: Location
+    var count: Int
 
-   var body: some View {
-      VStack(alignment: .leading, spacing: 2) {
-         HStack {
-            Text(item.name)
-               .font(.headline)
-            Spacer()
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            HStack {
+                Text(item.name)
+                    .font(.title2)
+                Spacer()
 
-            if count == 0 {
-               Text("Keine Artikel").font(.caption)
-            } else {
-               Text("\(count) Artikel").font(.caption)
+                if count == 0 {
+                    Text("Keine Artikel").font(.caption)
+                } else {
+                    Text("\(count) Artikel").font(.caption)
+                }
             }
-         }
 
-         Group {
-            if let data = item.image, let uiImage = UIImage(data: data) {
-               Image(uiImage: uiImage)
-                  .resizable()
-                  .scaledToFill()
-            } else {
-               RoundedRectangle(cornerRadius: 12)
-                  .fill(Color(.systemGray6))
-                  .overlay {
-                     Text("?")
-                        .padding()
-                  }
+            Group {
+                if let data = item.image, let uiImage = UIImage(data: data) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: .infinity, height: 180)
+                        .clipped()
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(.systemGray6))
+                        .overlay {
+                            Text("?")
+                                .padding()
+                        }
+                        .frame(width: .infinity,  height: 180)
+                }
             }
-         }
-         .frame(width: .infinity, height: 150)
-         .clipped()
-      }
-      .padding(.vertical, 2)
-   }
+        }
+        .padding(.vertical, 2)
+    }
 }
