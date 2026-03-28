@@ -12,6 +12,10 @@ struct StoreRowView: View {
     /// input
     let item: StoreItem
 
+    /// locals
+   let IMAGESIZE: CGFloat = 42
+
+    /// states
     @State private var showQuantitySheet = false
 
     var body: some View {
@@ -24,8 +28,8 @@ struct StoreRowView: View {
                 }
                 .resizable()
                 .scaledToFill()
-                .frame(width: 48, height: 48)
-                .clipShape(Circle())
+                .frame(width: IMAGESIZE, height: IMAGESIZE)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 .background {
                     GeometryReader { geo in
                         Path { path in
@@ -39,18 +43,15 @@ struct StoreRowView: View {
                 }
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.name)
-                    .font(.headline)
+               Text(item.name).font(.system(size: 13, weight: .semibold))
                 Text("Menge: \(item.quantity)")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
-
             Spacer()
-
             ExpiryBadge(item: item)
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 2)
         .contentShape(Rectangle())
         .onTapGesture { showQuantitySheet = true }
         .sheet(isPresented: $showQuantitySheet) {
@@ -58,58 +59,6 @@ struct StoreRowView: View {
                 .presentationDetents([.height(140)])
                 .presentationDragIndicator(.visible)
         }
-    }
-}
-
-private struct QuantitySheet: View {
-    let item: StoreItem
-
-    var body: some View {
-       Text ("Menge ändern").font(.title2).bold()
-        HStack(spacing: 32) {
-            Button {
-                if item.quantity > 0 { item.quantity -= 1 }
-            } label: {
-                Image(systemName: "minus.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundStyle(item.quantity > 0 ? .primary : .tertiary)
-            }
-            .disabled(item.quantity <= 1)
-
-            Text("\(item.quantity)")
-                .font(.system(size: 18, weight: .semibold, design: .rounded))
-                .monospacedDigit()
-                .frame(minWidth: 60, alignment: .center)
-
-            Button {
-                item.quantity += 1
-            } label: {
-                Image(systemName: "plus.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundStyle(.primary)
-            }
-        }
-        .padding(.top, 24)
-        .frame(maxWidth: .infinity)
-    }
-}
-
-private struct ExpiryBadge: View {
-    /// input
-    let item: StoreItem
-
-    var body: some View {
-        let days = item.daysUntilExpiry
-        let color: Color = item.isExpired ? .red : days <= 3 ? .orange : .green
-        let label = item.isExpired ? "Abgelaufen" : days == 0 ? "heute" : days.smartDays()
-
-        Text(label)
-            .font(.caption2.bold())
-            .padding(.horizontal, 8)
-            .padding(.vertical, 3)
-            .background(color.opacity(0.15))
-            .foregroundStyle(color)
-            .clipShape(Capsule())
     }
 }
 

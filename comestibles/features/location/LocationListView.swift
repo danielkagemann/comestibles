@@ -37,6 +37,7 @@ struct LocationListView: View {
             Button("Hinzufügen") {
                showLocation = true
             }
+            .buttonStyle(.glassProminent)
          }
       }
    }
