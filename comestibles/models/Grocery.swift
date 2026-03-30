@@ -17,6 +17,8 @@ struct GroceryItem: Decodable {
       var product_name_en: String?
       var stores: String?
       var image_front_url: String?
+      var product_quantity: String?
+      var product_quantity_unit: String?
    }
 }
 
@@ -27,7 +29,7 @@ class Grocery {
          return
       }
       
-      let url = URL(string: "https://world.openfoodfacts.org/api/v1/product/\(code).json")
+      let url = URL(string: "https://world.openfoodfacts.org/api/v2/product/\(code)?fields=code,product_name,product_name_en,product_quantity,product_quantity_unit,stores,image_front_small_url")
       let request = URLRequest(url: url!)
       URLSession.shared.dataTask(with: request) { data, response, error in
          if let data = data {

@@ -15,7 +15,6 @@ final class StoreItem {
    var barcode: String?
    var dueDate: Date?
    var quantity: Int
-   var notes: String?
    var createdAt: Date
    var stores: String?
    var image: String?
@@ -28,7 +27,6 @@ final class StoreItem {
       barcode: String? = nil,
       dueDate: Date? = nil,
       quantity: Int = 1,
-      notes: String? = nil,
       stores: String? = nil,
       image: String? = nil
    ) {
@@ -37,7 +35,6 @@ final class StoreItem {
       self.barcode = barcode
       self.dueDate = dueDate
       self.quantity = quantity
-      self.notes = notes
       createdAt = Date.now
       self.location = location
       self.stores = stores

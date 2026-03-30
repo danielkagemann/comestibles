@@ -37,6 +37,20 @@ struct StoreItemAddView: View {
     @State private var stores = ""
     @State private var showScanner: ScannerType = .hidden
 
+    private struct QuickDuration {
+        let label: String
+        let component: Calendar.Component
+        let value: Int
+    }
+
+    private let quickDurations: [QuickDuration] = [
+        QuickDuration(label: "1T", component: .day, value: 1),
+        QuickDuration(label: "1W", component: .weekOfYear, value: 1),
+        QuickDuration(label: "1M", component: .month, value: 1),
+        QuickDuration(label: "6M", component: .month, value: 6),
+        QuickDuration(label: "1J", component: .year, value: 1),
+    ]
+
     private var isValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty
     }
@@ -71,19 +85,19 @@ struct StoreItemAddView: View {
         NavigationStack {
             Form {
                 Section("Barcode") {
-                      TextField("Manuelle Eingabe (optional)", text: $barcode)
-                         .keyboardType(.numberPad)
-                   
-                   HStack {
-                      Button("Prüfen") {
-                         retrieveProductInformation(barcode)
-                      }
-                      .disabled(barcode.isEmpty)
-                      Spacer()
-                      Button("Barcode scannen") {
-                         self.showScanner = .visible
-                      }
-                   }
+                    TextField("Manuelle Eingabe (optional)", text: $barcode)
+                        .keyboardType(.numberPad)
+
+                    HStack {
+                        Button("Prüfen") {
+                            retrieveProductInformation(barcode)
+                        }
+                        .disabled(barcode.isEmpty)
+                        Spacer()
+                        Button("Barcode scannen") {
+                            self.showScanner = .visible
+                        }
+                    }
 
                     if showScanner == .visible {
                         VStack {
@@ -106,26 +120,40 @@ struct StoreItemAddView: View {
                     }
                 }
 
-               Section("Artikelinformationen") {
-                  TextField("Name", text: $name)
-                  
-                  Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
-                  
-               }
-               
-               Section("Haltbarkeit") {
-                    DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date).datePickerStyle(.wheel)
-                    TextField("Notizen (optional)", text: $notes)
-                    TextField("Geschäfte (optional)", text: $stores)
+                Section("Artikelinformationen") {
+                    TextField("Name", text: $name)
+                    TextField("Wo gekauft?", text: $stores)
+                    Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
+                }
+
+                Section("Haltbarkeit") {
+                    // quick-buttons as preset
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(quickDurations, id: \.label) { item in
+                                Button(item.label) {
+                                    dueDate = Calendar.current.date(byAdding: item.component, value: item.value, to: dueDate) ?? .now
+                                }
+                                .buttonStyle(.bordered)
+                                .buttonBorderShape(.capsule)
+                                .tint(.accentColor)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+
+                    DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date)
+                        .datePickerStyle(.compact)
                 }
             }
             .navigationTitle("Hinzufügen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                   Button(action: {dismiss()}, label: {
-                      Image(systemName: "arrow.left")
-                   })
+                    Button(action: { dismiss() }, label: {
+                        Image(systemName: "arrow.left")
+                    })
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Speichern") { save() }
@@ -144,7 +172,6 @@ struct StoreItemAddView: View {
             barcode: barcode.isEmpty ? nil : barcode,
             dueDate: dueDate,
             quantity: quantity,
-            notes: notes.isEmpty ? nil : notes,
             stores: stores,
             image: image
         )
@@ -155,6 +182,6 @@ struct StoreItemAddView: View {
 }
 
 #Preview {
-   let loc = Location(name: "Store 1")
-   StoreItemAddView(location: loc)
+    let loc = Location(name: "Store 1")
+    StoreItemAddView(location: loc)
 }
