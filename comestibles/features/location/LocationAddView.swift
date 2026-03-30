@@ -122,7 +122,9 @@ struct LocationAddView: View {
          }
          .toolbar {
             ToolbarItem(placement: .cancellationAction) {
-               Button("Abbrechen") { dismiss() }
+               Button(action: {dismiss()}, label: {
+                  Image(systemName: "arrow.left")
+               })
             }
             ToolbarItem(placement: .confirmationAction) {
                Button("Speichern") { save() }

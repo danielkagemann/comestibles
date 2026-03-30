@@ -71,9 +71,19 @@ struct StoreItemAddView: View {
         NavigationStack {
             Form {
                 Section("Barcode") {
-                    Button("Barcode scannen") {
-                        self.showScanner = .visible
-                    }
+                      TextField("Manuelle Eingabe (optional)", text: $barcode)
+                         .keyboardType(.numberPad)
+                   
+                   HStack {
+                      Button("Prüfen") {
+                         retrieveProductInformation(barcode)
+                      }
+                      .disabled(barcode.isEmpty)
+                      Spacer()
+                      Button("Barcode scannen") {
+                         self.showScanner = .visible
+                      }
+                   }
 
                     if showScanner == .visible {
                         VStack {
@@ -96,31 +106,26 @@ struct StoreItemAddView: View {
                     }
                 }
 
-                Section("Artikelinformationen") {
-                    TextField("Name", text: $name)
-
-                    Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
-
-                    HStack {
-                        TextField("Barcode (optional)", text: $barcode)
-                            .keyboardType(.numberPad)
-                        Button(action: {
-                            retrieveProductInformation(barcode)
-                        }, label: {
-                            Text("Prüfen").font(.caption)
-                        }).disabled(barcode.isEmpty)
-                    }
-
+               Section("Artikelinformationen") {
+                  TextField("Name", text: $name)
+                  
+                  Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
+                  
+               }
+               
+               Section("Haltbarkeit") {
                     DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date).datePickerStyle(.wheel)
                     TextField("Notizen (optional)", text: $notes)
                     TextField("Geschäfte (optional)", text: $stores)
                 }
             }
             .navigationTitle("Hinzufügen")
-            .navigationBarTitleDisplayMode(.automatic)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Abbrechen") { dismiss() }
+                   Button(action: {dismiss()}, label: {
+                      Image(systemName: "arrow.left")
+                   })
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Speichern") { save() }
@@ -147,4 +152,9 @@ struct StoreItemAddView: View {
 
         dismiss()
     }
+}
+
+#Preview {
+   let loc = Location(name: "Store 1")
+   StoreItemAddView(location: loc)
 }
