@@ -17,14 +17,17 @@ extension Int {
    
    func smartDays() -> String {
       if self > 365 {
-         return "in " + (self / 365).plural(single: "Jahr", multiple: "Jahren", prefixValue: true)
+         let years = self / 365
+         return String(localized: "in \(years) Jahr", table: "Localizable")
       }
       if self > 31 {
-         return "in " + (self / 31).plural(single: "Monat", multiple: "Monaten", prefixValue: true)
+         let months = self / 31
+         return String(localized: "in \(months) Monat", table: "Localizable")
       }
       if self > 7 {
-         return "in " + (self / 7).plural(single: "Woche", multiple: "Wochen", prefixValue: true)
+         let weeks = self / 7
+         return String(localized: "in \(weeks) Woche", table: "Localizable")
       }
-      return "in " + self.plural(single: "Tag", multiple: "Tagen", prefixValue: true)
+      return String(localized: "in \(self) Tag", table: "Localizable")
    }
 }

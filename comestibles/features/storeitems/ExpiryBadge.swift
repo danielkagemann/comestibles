@@ -14,7 +14,7 @@ struct ExpiryBadge: View {
     var body: some View {
         let days = item.daysUntilExpiry
         let color: Color = item.isExpired ? .red : days <= 3 ? .orange : .green
-        let label = item.isExpired ? "Abgelaufen" : days == 0 ? "heute" : days.smartDays()
+        let label = item.isExpired ? String(localized: "Abgelaufen") : days == 0 ? String(localized: "heute") : days.smartDays()
 
         Text(label)
             .font(.caption2.bold())

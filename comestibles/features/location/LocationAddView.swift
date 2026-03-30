@@ -47,12 +47,12 @@ struct LocationAddView: View {
    var body: some View {
       NavigationStack {
          Form {
-            Section("Name") {
-               TextField("Name des Standorts", text: $name)
+            Section(String(localized: "Name")) {
+               TextField(String(localized: "Name des Standorts"), text: $name)
                   .textInputAutocapitalization(.words)
                
                if isExisting {
-                  Text("Standort bereits vorhanden")
+                  Text("Standort bereits vorhanden", tableName: "Localizable")
                      .font(.caption2)
                      .foregroundStyle(.red)
                }
@@ -90,18 +90,18 @@ struct LocationAddView: View {
                }
 
             }
-            Section("Adresse (optional)") {
-               TextField("Adresse", text: $address)
+            Section(String(localized: "Adresse (optional)")) {
+               TextField(String(localized: "Adresse"), text: $address)
                   .textInputAutocapitalization(.words)
                HStack {
                   Spacer()
-                  Button("Aktueller Standort") {
+                  Button(String(localized: "Aktueller Standort")) {
                      requestCurrentLocation()
                   }
                }
             }
          }
-         .navigationTitle(isEditMode ? "Standort bearbeiten" : "Standort")
+         .navigationTitle(isEditMode ? String(localized: "Standort bearbeiten") : String(localized: "Standort"))
          .navigationBarTitleDisplayMode(.inline)
          .onAppear {
             if let loc = editLocation {
@@ -127,7 +127,7 @@ struct LocationAddView: View {
                })
             }
             ToolbarItem(placement: .confirmationAction) {
-               Button("Speichern") { save() }
+               Button(String(localized: "Speichern")) { save() }
                   .disabled(!isValid)
             }
          }

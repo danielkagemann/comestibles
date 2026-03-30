@@ -44,7 +44,7 @@ struct StoreRowView: View {
 
             VStack(alignment: .leading, spacing: 4) {
                Text(item.name).font(.system(size: 13, weight: .semibold))
-                Text("Menge: \(item.quantity)")
+                Text(String(format: String(localized: "Menge: %lld"), item.quantity))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

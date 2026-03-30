@@ -10,7 +10,7 @@ struct QuantitySheet: View {
     let item: StoreItem
 
     var body: some View {
-        Text("Menge ändern").font(.title2).bold()
+        Text("Menge ändern", tableName: "Localizable").font(.title2).bold()
         HStack(spacing: 32) {
             Button {
                 if item.quantity > 0 { item.quantity -= 1 }

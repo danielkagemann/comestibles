@@ -20,9 +20,9 @@ struct LocationRowItem: View {
                 Spacer()
 
                 if count == 0 {
-                    Text("Keine Artikel").font(.caption)
+                    Text("Keine Artikel", tableName: "Localizable").font(.caption)
                 } else {
-                    Text("\(count) Artikel").font(.caption)
+                    Text(String(format: String(localized: "%lld Artikel"), count)).font(.caption)
                 }
             }
 

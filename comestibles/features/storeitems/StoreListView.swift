@@ -2,15 +2,31 @@ import SwiftData
 import SwiftUI
 
 private enum GroupingMode: String, CaseIterable {
-    case store = "Geschäft"
-    case expiry = "Ablaufdatum"
+    case store = "store"
+    case expiry = "expiry"
+
+    var label: String {
+        switch self {
+        case .store:  return String(localized: "Geschäft")
+        case .expiry: return String(localized: "Ablaufdatum")
+        }
+    }
 }
 
 private enum ExpiryBucket: String, CaseIterable {
-    case week = "in 1 Woche"
-    case month = "in 1 Monat"
-    case quarter = "in 3 Monaten"
-    case other = "noch länger haltbar"
+    case week = "week"
+    case month = "month"
+    case quarter = "quarter"
+    case other = "other"
+
+    var label: String {
+        switch self {
+        case .week:    return String(localized: "in 1 Woche")
+        case .month:   return String(localized: "in 1 Monat")
+        case .quarter: return String(localized: "in 3 Monaten")
+        case .other:   return String(localized: "noch länger haltbar")
+        }
+    }
 
     static func bucket(for item: StoreItem) -> ExpiryBucket {
         guard let _ = item.dueDate, !item.isExpired else { return .other }
@@ -54,14 +70,15 @@ struct StoreListView: View {
         for item in filteredItems {
             let store = item.stores?.trimmingCharacters(in: .whitespaces).isEmpty == false
                 ? item.stores!.trimmingCharacters(in: .whitespaces)
-                : "Sonstiges"
+                : String(localized: "Sonstiges")
             dict[store, default: []].append(item)
         }
         return dict
             .map { (key: $0.key, items: $0.value) }
             .sorted { lhs, rhs in
-                if lhs.key == "Sonstiges" { return false }
-                if rhs.key == "Sonstiges" { return true }
+                let other = String(localized: "Sonstiges")
+                if lhs.key == other { return false }
+                if rhs.key == other { return true }
                 return lhs.key < rhs.key
             }
     }
@@ -75,7 +92,7 @@ struct StoreListView: View {
         }
         return ExpiryBucket.allCases.compactMap { bucket in
             guard let items = dict[bucket] else { return nil }
-            return (key: bucket.rawValue, items: items)
+            return (key: bucket.label, items: items)
         }
     }
 
@@ -91,13 +108,13 @@ struct StoreListView: View {
             Image(systemName: "cart.badge.questionmark")
                 .font(.system(size: 72))
                 .foregroundStyle(.secondary)
-            Text("Keine Artikel")
+            Text("Keine Artikel", tableName: "Localizable")
                 .font(.title2)
                 .fontWeight(.semibold)
         } description: {
-            Text("Keine Artikel vorhanden.")
+            Text("Keine Artikel vorhanden.", tableName: "Localizable")
         } actions: {
-            Button("Hinzufügen") {
+            Button(String(localized: "Hinzufügen")) {
                 showAddSheet = true
             }
             .buttonStyle(.glassProminent)
@@ -106,7 +123,7 @@ struct StoreListView: View {
 
     var body: some View {
         contentView
-          .searchable(text: $searchText, prompt: "Artikel suchen")
+          .searchable(text: $searchText, prompt: String(localized: "Artikel suchen"))
             .navigationTitle("\(location.name) (\(filteredItems.count))")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -115,7 +132,7 @@ struct StoreListView: View {
                         Button {
                             showAddSheet = true
                         } label: {
-                            Text("Neu").font(.callout)
+                            Text("Neu", tableName: "Localizable").font(.callout)
                         }
                         .buttonStyle(.glassProminent)
                     }
@@ -129,9 +146,9 @@ struct StoreListView: View {
     @ViewBuilder private var contentView: some View {
         if hasItems {
             VStack(spacing: 0) {
-                Picker("Gruppierung", selection: $groupingMode) {
+                Picker(String(localized: "Gruppierung"), selection: $groupingMode) {
                     ForEach(GroupingMode.allCases, id: \.self) { mode in
-                        Text(mode.rawValue).tag(mode)
+                        Text(mode.label).tag(mode)
                     }
                 }
                 .pickerStyle(.segmented)

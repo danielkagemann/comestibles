@@ -84,17 +84,17 @@ struct StoreItemAddView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Barcode") {
-                    TextField("Manuelle Eingabe (optional)", text: $barcode)
+                Section(String(localized: "Barcode")) {
+                    TextField(String(localized: "Manuelle Eingabe (optional)"), text: $barcode)
                         .keyboardType(.numberPad)
 
                     HStack {
-                        Button("Prüfen") {
+                        Button(String(localized: "Prüfen")) {
                             retrieveProductInformation(barcode)
                         }
                         .disabled(barcode.isEmpty)
                         Spacer()
-                        Button("Barcode scannen") {
+                        Button(String(localized: "Barcode scannen")) {
                             self.showScanner = .visible
                         }
                     }
@@ -107,7 +107,7 @@ struct StoreItemAddView: View {
 
                             HStack {
                                 Spacer()
-                                Button("Scannen abbrechen") {
+                                Button(String(localized: "Scannen abbrechen")) {
                                     self.showScanner = .hidden
                                 }
                             }
@@ -116,18 +116,17 @@ struct StoreItemAddView: View {
                     }
 
                     if showScanner == .retrieve {
-                        Text("Suche nach Produktinformationen...")
+                        Text("Suche nach Produktinformationen...", tableName: "Localizable")
                     }
                 }
 
-                Section("Artikelinformationen") {
-                    TextField("Name", text: $name)
-                    TextField("Wo gekauft?", text: $stores)
-                    Stepper("Menge: \(quantity)", value: $quantity, in: 1 ... 999)
+                Section(String(localized: "Artikelinformationen")) {
+                    TextField(String(localized: "Name"), text: $name)
+                    Stepper(String(format: String(localized: "Menge: %lld"), quantity), value: $quantity, in: 1 ... 999)
                 }
 
-                Section("Haltbarkeit") {
-                    // quick-buttons as preset
+                Section(String(localized: "Haltbarkeit")) {
+                    // Schnell-Buttons für häufige Zeiträume
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(quickDurations, id: \.label) { item in
@@ -143,11 +142,14 @@ struct StoreItemAddView: View {
                     }
                     .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
 
-                    DatePicker("Ablaufdatum", selection: $dueDate, displayedComponents: .date)
+                    DatePicker(String(localized: "Ablaufdatum"), selection: $dueDate, displayedComponents: .date)
                         .datePickerStyle(.compact)
+
+                    TextField(String(localized: "Notizen (optional)"), text: $notes)
+                    TextField(String(localized: "Geschäfte (optional)"), text: $stores)
                 }
             }
-            .navigationTitle("Hinzufügen")
+            .navigationTitle(String(localized: "Hinzufügen"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -156,7 +158,7 @@ struct StoreItemAddView: View {
                     })
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Speichern") { save() }
+                    Button(String(localized: "Speichern")) { save() }
                         .disabled(!isValid)
                 }
             }

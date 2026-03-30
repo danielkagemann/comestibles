@@ -28,13 +28,13 @@ struct LocationListView: View {
             Image(systemName: "mappin.slash.circle")
                .font(.system(size: 72))
                .foregroundStyle(.secondary)
-            Text("Kein Standort")
+            Text("Kein Standort", tableName: "Localizable")
                .font(.title2)
                .fontWeight(.semibold)
          } description: {
-            Text("Es ist noch kein Standort vorhanden.")
+            Text("Es ist noch kein Standort vorhanden.", tableName: "Localizable")
          } actions: {
-            Button("Hinzufügen") {
+            Button(String(localized: "Hinzufügen")) {
                showLocation = true
             }
             .buttonStyle(.glassProminent)
@@ -55,7 +55,7 @@ struct LocationListView: View {
                      Button {
                         locationToEdit = loc
                      } label: {
-                        Label("Bearbeiten", systemImage: "pencil")
+                        Label(String(localized: "Bearbeiten"), systemImage: "pencil")
                      }
                      .tint(.accentColor)
                   }
@@ -63,7 +63,7 @@ struct LocationListView: View {
                      Button(role: .destructive) {
                         locationToDelete = loc
                      } label: {
-                        Label("Löschen", systemImage: "trash")
+                        Label(String(localized: "Löschen"), systemImage: "trash")
                      }
                   }
             }
@@ -88,7 +88,7 @@ struct LocationListView: View {
             Button {
                showLocation = true
             } label: {
-               Text("Neu").font(.callout)
+               Text("Neu", tableName: "Localizable").font(.callout)
             }
             .buttonStyle(.glassProminent)
          }
@@ -102,15 +102,15 @@ struct LocationListView: View {
          LocationAddView(editLocation: loc)
       }
       .confirmationDialog(
-         "Standort löschen?",
+         String(localized: "Standort löschen?"),
          isPresented: Binding(get: { locationToDelete != nil }, set: { if !$0 { locationToDelete = nil } }),
          titleVisibility: .visible
       ) {
-         Button("Löschen", role: .destructive) { confirmDelete() }
-         Button("Abbrechen", role: .cancel) { locationToDelete = nil }
+         Button(String(localized: "Löschen"), role: .destructive) { confirmDelete() }
+         Button(String(localized: "Abbrechen"), role: .cancel) { locationToDelete = nil }
       } message: {
          if let name = locationToDelete?.name {
-            Text("\"\(name)\" und alle zugehörigen Artikel werden unwiderruflich geloescht.")
+            Text(String(format: String(localized: "\"%@\" und alle zugehörigen Artikel werden unwiderruflich gelöscht."), name))
          }
       }
    }
