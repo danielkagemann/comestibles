@@ -26,7 +26,7 @@ struct LocationRowItem: View {
                 }
             }
 
-            Group {
+           ZStack (alignment: .bottomLeading){
                 if let data = item.image, let uiImage = UIImage(data: data) {
                     Image(uiImage: uiImage)
                         .resizable()
@@ -43,8 +43,25 @@ struct LocationRowItem: View {
                         }
                         .frame(width: .infinity,  height: 180)
                 }
+               
+               // in case of address we show it
+               if let address = item.address {
+                  Text(address)
+                     .font(.system(size: 11))
+                     .foregroundColor(.white)
+                     .padding(4)
+                     .background(.black.opacity(0.6))
+                     .clipShape(RoundedRectangle(cornerRadius: 8))
+                     .padding(8)
+               }
             }
         }
         .padding(.vertical, 2)
     }
+}
+
+
+#Preview {
+   let loc = Location(name: "San Fulgencio", address: "Call Miguel indurain 4, San Fulgencio")
+   LocationRowItem(item: loc, count: 12)
 }

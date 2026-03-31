@@ -98,6 +98,8 @@ struct StoreItemAddView: View {
                             self.showScanner = .visible
                         }
                     }
+                   
+                   Text("Daten werden von Open Food Facts bereitgestellt.").font(.caption)
 
                     if showScanner == .visible {
                         VStack {
@@ -126,7 +128,7 @@ struct StoreItemAddView: View {
                 }
 
                 Section(String(localized: "Haltbarkeit")) {
-                    // Schnell-Buttons für häufige Zeiträume
+                    // quick preset buttons for timespan
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 8) {
                             ForEach(quickDurations, id: \.label) { item in
