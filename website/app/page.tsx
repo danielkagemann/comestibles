@@ -78,7 +78,7 @@ export default function Home() {
                 href="#download"
                 className="inline-flex items-center"
               >
-                <Image src="/assets/b-ios.svg" alt="Im App Store laden" width={120} height={40} />
+                <Image src="/comestibles/assets/b-ios.svg" alt="Im App Store laden" width={120} height={40} />
               </Link>
             </div>
           </div>
@@ -87,7 +87,7 @@ export default function Home() {
             className="translate-y-6 opacity-0 animate-[fadeUp_0.7s_ease_forwards]"
             style={{ animationDelay: "0.35s" }}
           >
-            <Image src="/assets/screen.webp"
+            <Image src="/comestibles/assets/screen.webp"
               alt="Screenshot"
               width={600}
               height={734}
@@ -165,7 +165,7 @@ export default function Home() {
             href="#"
             className="inline-flex items-center"
           >
-            <Image src="/assets/w-ios.svg" alt="Im App Store laden" width={150} height={50} />
+            <Image src="/comestibles/assets/w-ios.svg" alt="Im App Store laden" width={150} height={50} />
           </Link>
         </div>
       </section>
